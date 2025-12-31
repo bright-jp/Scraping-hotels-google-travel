@@ -1,36 +1,36 @@
-# Scraping Hotels from Google Travel
+# Google Travel からホテルをスクレイピングする方法
 
-[![Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.com/) 
+[![Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.jp/) 
 
-This guide explains how to gather hotel listings, prices, and amenities from Google Travel using either Selenium methods or Bright Data’s APIs.
+このガイドでは、Selenium を使う方法、または Bright Data の API を使う方法のいずれかで、Google Travel からホテル一覧、価格、アメニティを収集する方法を説明します。
 
-- [Prerequisites](#prerequisites)
-- [What To Extract From Google Travel](#what-to-extract-from-google-travel)
-- [Extracting The Data With Selenium](#extracting-the-data-with-selenium)
-- [Extracting the Data With Bright Data’s Travel API](#extracting-the-data-with-bright-datas-travel-api)
+- [前提条件](#prerequisites)
+- [Google Travel から抽出する内容](#what-to-extract-from-google-travel)
+- [Selenium でデータを抽出する](#extracting-the-data-with-selenium)
+- [Bright Data の Travel API でデータを抽出する](#extracting-the-data-with-bright-datas-travel-api)
     - [Requests](#requests)
     - [AIOHTTP](#aiohttp)
-- [Bright Data’s Alternative Solutions](#bright-datas-alternative-solutions)
+- [Bright Data の代替ソリューション](#bright-datas-alternative-solutions)
 
 ## Prerequisites
 
-To scrape travel data, you’re going to need Python and either Selenium, Requests, or AIOHTTP modules. With Selenium, you’ll scrape hotel information straight from Google Travel. With Requests and AIOHTTP, you’ll use Bright Data’s [Booking.com API](https://brightdata.com/products/web-scraper/booking).
+旅行データをスクレイピングするには、Python と、Selenium／Requests／AIOHTTP モジュールのいずれかが必要です。Selenium を使う場合は、Google Travel から直接ホテル情報をスクレイピングします。Requests と AIOHTTP を使う場合は、Bright Data の [Booking.com API](https://brightdata.jp/products/web-scraper/booking) を使用します。
 
-If you’re using Selenium, make sure you have [webdriver](https://googlechromelabs.github.io/chrome-for-testing/) installed. If you’re unfamiliar with Selenium, take a look at [this guide](https://brightdata.com/blog/how-tos/using-selenium-for-web-scraping) to get acquainted quickly.
+Selenium を使用する場合は、[webdriver](https://googlechromelabs.github.io/chrome-for-testing/) がインストールされていることを確認してください。Selenium に不慣れな場合は、[こちらのガイド](https://brightdata.jp/blog/how-tos/using-selenium-for-web-scraping) を確認すると、すぐに理解できます。
 
-Install Selenium:
+Selenium をインストールします:
 
 ```
 pip install selenium
 ```
 
-Install Requests:
+Requests をインストールします:
 
 ```
 pip install requests
 ```
 
-Install AIOHTTP:
+AIOHTTP をインストールします:
 
 ```bash
 pip install aiohttp
@@ -38,33 +38,33 @@ pip install aiohttp
 
 ## What To Extract From Google Travel
 
-All of the hotel results come embedded in a custom `c-wiz` element from Google Travel.
+ホテル結果はすべて、Google Travel のカスタム `c-wiz` 要素内に埋め込まれています。
 
-![Inspect c-wiz Element](https://brightdata.com/wp-content/uploads/2025/01/image-32.png)
+![Inspect c-wiz Element](https://brightdata.jp/wp-content/uploads/2025/01/image-32.png)
 
-However, there are many `c-wiz` elements on the page. Each hotel card contains an `a` element directly descended from a `div` and this `c-wiz` element. We can write a CSS selector to find all `a` tags descended from these elements: `c-wiz > div > a`.
+ただし、ページ上には多くの `c-wiz` 要素があります。各ホテルカードには、`div` とこの `c-wiz` 要素の直下にある `a` 要素が含まれています。これらの要素配下のすべての `a` タグを見つけるための CSS セレクタとして、`c-wiz > div > a` を記述できます。
 
-![Inspect a Element](https://brightdata.com/wp-content/uploads/2025/01/image-33.png)
+![Inspect a Element](https://brightdata.jp/wp-content/uploads/2025/01/image-33.png)
 
-The name of the listing comes embedded in an `h2`.
+リスティング名は `h2` に埋め込まれています。
 
-![Inspect h2 Element](https://brightdata.com/wp-content/uploads/2025/01/image-34.png)
+![Inspect h2 Element](https://brightdata.jp/wp-content/uploads/2025/01/image-34.png)
 
-Our price comes embedded in a `span`.
+価格は `span` に埋め込まれています。
 
-![Inspect Price Element](https://brightdata.com/wp-content/uploads/2025/01/image-35.png)
+![Inspect Price Element](https://brightdata.jp/wp-content/uploads/2025/01/image-35.png)
 
-Our amenities are embedded in `li` (list) elements.
+アメニティは `li`（リスト）要素に埋め込まれています。
 
-![Inspect Amenities](https://brightdata.com/wp-content/uploads/2025/01/image-36.png)
+![Inspect Amenities](https://brightdata.jp/wp-content/uploads/2025/01/image-36.png)
 
-After finding a hotel card, we can extract all of the aforementioned data from it.
+ホテルカードを特定できたら、そこから前述したすべてのデータを抽出できます。
 
 ## Extracting The Data With Selenium
 
-Extracting this data with Selenium is relatively straightforward once you know what to look for. However, Google Travel loads the results dynamically, which makes it a delicate process held together by preconfigured waits, mouse clicks, and custom windows.
+Selenium でのデータ抽出は、どこを見るべきかが分かれば比較的簡単です。ただし、Google Travel は結果を動的に読み込むため、事前設定した待機、マウスクリック、カスタムウィンドウなどで成り立つ繊細なプロセスになります。
 
-Here is the full Python script:
+以下が Python スクリプト全文です:
 
 ```python
 from selenium import webdriver
@@ -146,37 +146,37 @@ if __name__ == "__main__":
     scrape_hotels("miami", pages=PAGES)
 ```
 
-Let's review what the script does step by step:
+スクリプトの処理を手順ごとに確認します:
 
-1. First, we create an instance of `ChromeOptions`. We use this to add our `--headless` and `--window-size=1920,1080` arguments.
+1. まず `ChromeOptions` のインスタンスを作成します。これを使って `--headless` と `--window-size=1920,1080` 引数を追加します。
 
 > **Note**\
-> Without the custom window size, the results would not load properly, and we would end up scraping the same results over and over again.
+> カスタムウィンドウサイズがない場合、結果が正しく読み込まれず、同じ結果を何度もスクレイピングしてしまいます。
 
-2. When we launch the browser, we use the keyword argument, `options=OPTIONS`. This launches Chrome with our custom options.
+2. ブラウザ起動時に、キーワード引数 `options=OPTIONS` を使用します。これにより、Chrome がカスタムオプション付きで起動します。
 
-3. `ActionChains(driver)` gives us an `ActionChains` instance. We use this later in our script to move the cursor to the `Next` button and then click on it.
+3. `ActionChains(driver)` により `ActionChains` インスタンスを取得します。これは後ほど、カーソルを `Next` ボタンへ移動してクリックするために使用します。
 
-4. We use a `while` loop to contain our runtime. Once the scrape has finished, we’ll exit this loop.
+4. 実行時間を制御するために `while` ループを使用します。スクレイピングが完了したら、このループを抜けます。
 
-5. `hotel_links = driver.find_elements(By.CSS_SELECTOR, "c-wiz > div > a")` gives us all of the hotel links on the page. We find their parent elements using their xpath: `hotel_card = hotel_link.find_element(By.XPATH, "..")`.
+5. `hotel_links = driver.find_elements(By.CSS_SELECTOR, "c-wiz > div > a")` により、ページ上のすべてのホテルリンクを取得します。親要素は xpath を使って `hotel_card = hotel_link.find_element(By.XPATH, "..")` のように取得します。
 
-6. We go through and extract all the individual bits of data we looked at earlier:
+6. 先ほど確認した個々のデータをすべて抽出します:
     - url: `hotel_link.get_attribute("href")`
     - name: `hotel_card.find_element(By.CSS_SELECTOR, "h2").text`
-    - When looking for the price, there are sometimes additional elements in the card such as `DEAL` and `GREAT PRICE`. To ensure that we’re always getting the right price, we extract the `span` elements in an array. If the array contains these words, we take the second element (`price_holder[1].text`) instead of the first one (`price_holder[0].text`)
-    - We also use the `find_elements()` method when looking for the rating. If there is no rating present, we give it a default value of `n/a`.
-    - `hotel_card.find_elements(By.CSS_SELECTOR, "li")` yields our amenity holders. We extract each of them using their `text` attribute.
-7. We continue this loop until we’ve scraped all of our desired pages. Once we’ve got our data, we set `done` to `True` and exit the loop.
-8. We close the browser and use `json.dump()` to save all of our scraped data to a JSON file.
+    - 価格を探す際、カード内に `DEAL` や `GREAT PRICE` などの追加要素が含まれる場合があります。常に正しい価格を取得できるように、`span` 要素を配列として抽出します。配列にこれらの単語が含まれている場合は、最初の要素（`price_holder[0].text`）ではなく 2 番目の要素（`price_holder[1].text`）を採用します。
+    - 評価を探す場合にも `find_elements()` メソッドを使用します。評価が存在しない場合は、デフォルト値として `n/a` を設定します。
+    - `hotel_card.find_elements(By.CSS_SELECTOR, "li")` でアメニティの保持要素を取得します。各要素は `text` 属性で抽出します。
+7. 必要なページ数をスクレイピングするまでこのループを続けます。データを取得したら、`done` を `True` に設定してループを終了します。
+8. ブラウザを閉じ、`json.dump()` を使ってスクレイピングしたデータを JSON ファイルに保存します。
 
 ## Extracting the Data With Bright Data’s Travel API
 
-If you don't want to depend on a scraper or deal with selectors and locators, you can use our [travel data](https://brightdata.com/use-cases/travel) or extract hotel data using our [Booking.com API](https://brightdata.com/products/web-scraper/booking). Two methods to do it are the `requests` module and the AIOHTTP library.
+スクレイパーに依存したくない場合や、セレクタやロケータの扱いを避けたい場合は、[travel data](https://brightdata.jp/use-cases/travel) を利用するか、[Booking.com API](https://brightdata.jp/products/web-scraper/booking) を使ってホテルデータを抽出できます。実装方法としては、`requests` モジュールと AIOHTTP ライブラリの 2 つがあります。
 
 ### Requests
 
-The code below sets you up with the Booking.com API. Simply enter your API key, travel location, check-in date and check-out date. First, it makes a request to the API to generate the data. Then, it repeatedly checks on the data every 10 seconds until our report is ready. Once we’ve received our data, we save it in a JSON file.
+以下のコードは Booking.com API を使えるように設定します。API key、旅行先、チェックイン日、チェックアウト日を入力するだけです。最初に API へリクエストしてデータ生成をトリガーし、その後 10 秒ごとにレポートの準備ができたかを繰り返し確認します。データを受け取ったら JSON ファイルに保存します。
 
 ```python
 import requests
@@ -264,12 +264,12 @@ if __name__ == "__main__":
     poll_and_retrieve_snapshot(API_KEY, snapshot_id)
 ```
 
-- `get_bookings()` takes your `API_KEY`, `LOCATION` and `DATES`. It then makes a request for the data and returns the `snapshot_id`.
-- The `snapshot_id` is required to retrieve the snapshot.
-- After the `snapshot_id` has been generated, `poll_and_retrieve_snapshot()` checks every 10 seconds to see if the data is ready.
-- Once the data is ready, we use `json.dump()` to save it to a JSON file.
+- `get_bookings()` は `API_KEY`、`LOCATION`、`DATES` を受け取ります。その後、データ要求のリクエストを行い、`snapshot_id` を返します。
+- スナップショットを取得するには `snapshot_id` が必要です。
+- `snapshot_id` が生成された後、`poll_and_retrieve_snapshot()` は 10 秒ごとにデータ準備状況を確認します。
+- データの準備ができたら、`json.dump()` を使って JSON ファイルに保存します。
 
-When you run the code, you should see something similar to this in your terminal.
+コードを実行すると、ターミナルには次のような表示が出るはずです。
 
 ```
 Request successful. Response:
@@ -285,7 +285,7 @@ Snapshot is ready. Downloading...
 Snapshot saved to snapshot-data.json
 ```
 
-Then you’ll get a JSON file full of objects like this.
+その後、次のようなオブジェクトが多数入った JSON ファイルが生成されます。
 
 ```json
 {
@@ -345,7 +345,7 @@ Then you’ll get a JSON file full of objects like this.
 
 ### AIOHTTP
 
-With the [AIOHTTP](https://brightdata.com/blog/web-data/speed-up-web-scraping) library, this process can become faster because we can trigger, poll, and download multiple datasets simultaneously. The code below builds on the concepts from the Requests example above, but instead uses `aiohttp.ClientSession()` to make multiple requests asynchronously.
+[AIOHTTP](https://brightdata.jp/blog/web-data/speed-up-web-scraping) ライブラリを使用すると、複数のデータセットを同時にトリガー、ポーリング、ダウンロードできるため、このプロセスをより高速化できます。以下のコードは上記 Requests の例の概念を踏襲しつつ、`aiohttp.ClientSession()` を使って複数リクエストを非同期に実行します。
 
 ```python
 import aiohttp
@@ -438,11 +438,11 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-- Both `get_bookings()` and `poll_and_retrieve_snapshot()` now use the `aiohttp.ClientSession` object to create async requests to the server.
-- `process_location()` is used to process all data for a location.
-- `main()` allows us to call `process_location()` on all locations simultaneously.
+- `get_bookings()` と `poll_and_retrieve_snapshot()` は、いずれも `aiohttp.ClientSession` オブジェクトを使ってサーバーへ非同期リクエストを作成するようになりました。
+- `process_location()` は、ある location に対する全データ処理に使用します。
+- `main()` により、すべての location に対して同時に `process_location()` を呼び出せます。
 
-Here is the output:
+出力例は以下です:
 
 ```
 Request successful for location: Miami. Response:
@@ -473,12 +473,12 @@ Snapshot saved to snapshot-key_west.json
 
 ## Bright Data’s Alternative Solutions
 
-Beyond the [Web Scraper APIs](https://brightdata.com/products/web-scraper), Bright Data provides ready-to-use datasets tailored to meet diverse needs. Among our most sought-after travel datasets are:
+[Web Scraper APIs](https://brightdata.jp/products/web-scraper) に加えて、Bright Data は多様なニーズに対応する、すぐに使えるデータセットも提供しています。特に需要の高い旅行系データセットには次のものがあります:
 
-- [Hotel Datasets](https://brightdata.com/products/datasets/travel/hotels)
-- [Expedia Datasets](https://brightdata.com/products/datasets/travel/expedia)
-- [Tourism Datasets](https://brightdata.com/products/datasets/tourism)
-- [Booking.com Datasets](https://brightdata.com/products/datasets/booking)
-- [TripAdvisor Datasets](https://brightdata.com/products/datasets/tripadvisor)
+- [Hotel Datasets](https://brightdata.jp/products/datasets/travel/hotels)
+- [Expedia Datasets](https://brightdata.jp/products/datasets/travel/expedia)
+- [Tourism Datasets](https://brightdata.jp/products/datasets/tourism)
+- [Booking.com Datasets](https://brightdata.jp/products/datasets/booking)
+- [TripAdvisor Datasets](https://brightdata.jp/products/datasets/tripadvisor)
 
-You can choose between fully managed or self-managed custom datasets, allowing you to extract data from any public website and customize it to your exact specifications.
+フルマネージドまたはセルフマネージドのカスタムデータセットを選択でき、あらゆる公開 Web サイトからデータを抽出して、要件どおりにカスタマイズできます。
